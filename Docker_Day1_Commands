@@ -1,0 +1,24 @@
+Sample Lab -1 – Hello World
+
+Get the container – docker container run hello-world
+
+Playing with Images
+docker image pull alpine
+docker image ls
+docker image ls -a
+docker image ls -l
+docker container run alpine ls -l
+docker container run alpine echo "hello from alpine"
+docker container run alpine /bin/sh
+docker container run -it alpine /bin/sh
+docker image ls -a
+docker image ls -l
+exit
+
+Container Isolation
+
+docker container run -it alpine /bin/ash
+docker container run alpine ls
+docker container ls -a
+docker container start <container ID>
+docker container exec <container ID> ls

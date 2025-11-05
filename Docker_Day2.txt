@@ -1,0 +1,79 @@
+Docker Playing around with Images
+Task 0: Prerequisites
+Task 1: Run some simple Docker containers
+Task 2: Package and run a custom app using Docker
+Task 3: Modify a Running Website
+Task 1: Run some simple Docker containers
+Linux_tweet_app
+git clone https://github.com/dockersamples/linux_tweet_app
+alpine image from docker hub
+docker container run alpine hostname
+docker container ls --all
+Running an interactive ubuntu container
+docker container run --interactive --tty --rm ubuntu bash
+•	--interactive says you want an interactive session.
+•	--tty allocates a pseudo-tty.
+•	--rm tells Docker to go ahead and remove the container when it’s done executing.
+This will open an interactive bash in the container
+ls /
+ps aux
+cat /etc/issue
+exit
+docker container ls –all
+ 
+MYSQL Container
+docker container run \
+ --detach \
+ --name mydb \
+ -e MYSQL_ROOT_PASSWORD=my-secret-pw \
+ mysql:latest
+•	--detach will run the container in the background.
+•	--name will name it mydb.
+•	-e will use an environment variable to specify the root password (NOTE: This should never be done in production).
+docker container ls
+docker container logs  
+docker container top
+docker container logs mydb
+docker container top mydb
+
+List the MySQL version using docker container exec.
+docker container exec allows you to run a command inside a container. In this example, we’ll use docker container exec to run the command-line equivalent of mysql --user=root --password=$MYSQL_ROOT_PASSWORD --version inside our MySQL container.
+ docker exec -it mydb \
+ mysql --user=root --password=$MYSQL_ROOT_PASSWORD --version
+
+docker exec -it mydb sh
+mysql --user=root --password=$MYSQL_ROOT_PASSWORD –version
+exit
+ 
+Task 2: Package and run a custom app using Docker
+Make sure you’re in the linux_tweet_app directory.
+ cd ~/linux_tweet_app
+cat Dockerfile
+ 
+•	FROM specifies the base image to use as the starting point for this new image you’re creating. For this example we’re starting from nginx:latest.
+•	COPY copies files from the Docker host into the image, at a known location. In this example, COPY is used to copy two files into the image: index.html. and a graphic that will be used on our webpage.
+•	EXPOSE documents which ports the application uses.
+•	CMD specifies what command to run when a container is started from the image. Notice that we can specify the command, as well as run-time arguments.
+In order to make the following commands more copy/paste friendly, export an environment variable containing your DockerID (if you don’t have a DockerID you can get one for free via Docker Hub).
+You will have to manually type this command as it requires your unique DockerID.
+export DOCKERID=<your docker id>
+Creating docker image with Dockerfile
+docker image build --tag $DOCKERID/linux_tweet_app:1.0 .
+Use the docker image build command to create a new Docker image using the instructions in the Dockerfile.
+•	--tag allows us to give the image a custom name. In this case it’s comprised of our DockerID, the application name, and a version. Having the Docker ID attached to the name will allow us to store it on Docker Hub in a later step
+•	. tells Docker to use the current directory as the build context
+Be sure to include period (.) at the end of the command.
+Use the docker container run command to start a new container from the image you created.
+As this container will be running an NGINX web server, we’ll use the --publish flag to publish port 80 inside the container onto port 80 on the host. This will allow traffic coming in to the Docker host on port 80 to be directed to port 80 in the container. The format of the --publish flag is host_port:container_port.
+ docker container run \
+ --detach \
+ --publish 80:80 \
+ --name linux_tweet_app \
+ $DOCKERID/linux_tweet_app:1.0
+Any external traffic coming into the server on port 80 will now be directed into the container on port 80.
+In a later step you will see how to map traffic from two different ports - this is necessary when two containers use the same port to communicate since you can only expose the port once on the host.
+1.	Click here to load the website which should be running.
+2.	Once you’ve accessed your website, shut it down and remove it.
+3.	 docker container rm --force linux_tweet_app
+Note: We used the --force parameter to remove the running container without shutting it down. This will ungracefully shutdown the container and permanently remove it from the Docker host.
+In a production environment you may want to use docker container stop to gracefully stop the container and leave it on the host. You can then use docker container rm to permanently remove it.
