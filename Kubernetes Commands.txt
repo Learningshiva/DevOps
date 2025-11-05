@@ -1,0 +1,59 @@
+label
+------
+During pod creation
+Syn - kubectl <label-name> <pod_name> --image=url 
+Ex - kubectl run mypod --image=quay.io/gauravkumar9130/mywebapp
+
+After POD creation
+Syn - kubectl label pod pod_name key=value (pair of key value )
+Ex - kubectl label pod mypod app=web
+here app is the attribute/ key and web is the value
+
+
+Selector
+-------------------
+Selector  - is used for selecting pods based on the labels.
+ex - 
+kubectl get pods --selector=app=web --show-labels
+here app=web is the key value pair for labels.
+
+
+Replica Set
+
+To deploy a container with replicaset
+use a yaml file for configuration - replica_set.yml
+kubectl create -f replica_set.yml
+--> this will create no pods for the container.
+
+to stop all the pods which are replicated from relica_set.yml use the below command
+ SYN - kubectl scale replicaset <replicaset-name> --replicas=0
+ EX -  kubectl scale rs rs-web --replicas=0
+ Note you can use replicaset or rs in the above command.
+
+Services using Cluster IP
+--------------------------
+Cluster IP -
+
+--> Accessing or assigning any port in service
+Ex - Cip.yml
+kubectl create -f Cip.yml
+kubectl get svc (It will list the services)
+
+NOde IP
+Loadbalancer
+
+
+kubernetes configuration
+Setting current configs
+Syn - kubectl config set-context [NAME | --current] [--cluster=cluster_nickname] [--user=user_nickname]
+[--namespace=namespace]
+Ex ->kubectl config set-context --current --cluster=docker-desktop --namespace=test
+kubectl config get-contexts
+
+
+
+
+
+
+
+
